@@ -1,0 +1,34 @@
+Allegro5 initialized
+Game begin
+Game initialized
+Game start event loop
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Key with keycode -1835934408 down
+Key with keycode -1835934408 up
+Game end
