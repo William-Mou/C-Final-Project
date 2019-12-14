@@ -6,12 +6,15 @@
 
 
 #include<stdio.h>
+#include<stdlib.h>
 #include<allegro5/allegro.h>
 #include<allegro5/allegro_primitives.h>
 #include<allegro5/allegro_audio.h>
 #include<allegro5/allegro_color.h>
 #include<allegro5/allegro_ttf.h>
 #include<allegro5/allegro_acodec.h>
+#include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
 
 
 
@@ -19,11 +22,11 @@
 #define LOG_ENABLED
 
 #define NORMAL_SPEED 1
-#define SLOW_SPEED 0.65
-#define HOLD_FPS 60
-#define SEAL_BODY 5
-enum STATUS{MENU, PLAYING, GG };
-
+#define SLOW_SPEED 0.4
+#define HOLD_FPS 90
+#define SEAL_BODY 60
+enum STATUS{MENU, PLAYING, GG, WIN };
+enum DIRECTION{L,R};
 typedef struct {
     int x;
     int y;
@@ -39,23 +42,26 @@ ALLEGRO_EVENT_QUEUE* game_event_queue;
 // TODO: [Declare variables]
 // Declare the variables that stores the timer.
 ALLEGRO_TIMER* game_update_timer;
-
+ALLEGRO_BITMAP* img;
+ALLEGRO_FONT* font;
 // Frame rate (frame per second)
 const int FPS = 60;
 // Define screen width and height as constants.
-const int SCREEN_W = 600;
+const int SCREEN_W = 1200;
 const int SCREEN_H = 900;
 // Keyboard state, whether the key is down or not.s
 bool key_state[ALLEGRO_KEY_MAX];
 
 // Define the block's coordinates.
-float x, y;
+float x=SCREEN_W-100, y=SCREEN_H/2-150;
 
-#define numberBad 10
+#define numberBad 20
 float sealSpeed = 1;
 // Seal will lock when he rise or down
 bool IsLockUp   = false;
 bool IsLockDown = false;
+bool IsLockRight   = false;
+
 
 int  lockTime = 0; 
 BadThing bad[numberBad];
@@ -63,7 +69,7 @@ BadThing bad[numberBad];
 int seal_lives = 3;
 
 STATUS status = MENU;
-
+DIRECTION direction = L;
 /* Declare function prototypes. */
 
 // Initialize variables and resources.
@@ -108,6 +114,7 @@ void game_vlog(const char* format, va_list arg);
 // Program entry point.
 // Returns program exit code.
 int main(void) {
+    srand(time(NULL));
     allegro5_init();
     game_log("Allegro5 initialized");
     game_log("Game begin");
@@ -151,6 +158,12 @@ void allegro5_init(void) {
     if (!al_install_keyboard())
         game_abort("failed to install keyboard");
 
+    if (!al_init_font_addon())
+        game_abort("failed to initialize font add-on");
+    if (!al_init_ttf_addon())
+        game_abort("failed to initialize ttf add-on");
+    if (!al_init_image_addon())
+        game_abort("failed to initialize image add-on");
     al_register_event_source(game_event_queue, al_get_display_event_source(game_display));
     // TODO: [Register keyboard to event queue]
     al_register_event_source(game_event_queue, al_get_keyboard_event_source());
@@ -163,7 +176,12 @@ void allegro5_init(void) {
 }
 
 void game_init(void) {
-    x = y = 400;
+    font = al_load_ttf_font("ARCADECLASSIC.ttf", 52, 0);
+    if (!font)
+        game_abort("failed to load font: pirulen.ttf");
+    img = al_load_bitmap("seal.png");
+    if (!img)
+        game_abort("failed to load image:");
     InitBad();
 }
 
@@ -172,7 +190,7 @@ void game_start_event_loop(void) {
     ALLEGRO_EVENT event;
     while (!done) {
         al_wait_for_event(game_event_queue, &event);
-        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE || status == GG)
+        if (event.type == ALLEGRO_EVENT_DISPLAY_CLOSE )
             // Event for clicking the window close button.
             done = true;
         // TODO: [Process events]
@@ -223,6 +241,16 @@ void game_update(void) {
         lockTime -= 1;
         vy -= 1;
     }
+    else if (IsLockRight)
+    {
+        if (lockTime == 0) 
+        {
+            IsLockRight = false;
+            sealSpeed = NORMAL_SPEED;
+        }
+        lockTime -= 1;
+        vx += 1;
+    }
 
     else
     {
@@ -241,16 +269,29 @@ void game_update(void) {
             sealSpeed = SLOW_SPEED;
         }
         if (key_state[ALLEGRO_KEY_LEFT] || key_state[ALLEGRO_KEY_A])
+        {
             vx -= 1;
+            direction = L;
+        }
+            
         if (key_state[ALLEGRO_KEY_RIGHT] || key_state[ALLEGRO_KEY_D])
+        {
             vx += 1;
+            IsLockRight = true;
+            lockTime = HOLD_FPS;
+            sealSpeed = NORMAL_SPEED *2;
+            direction = R;
+        }
+            
     }
     // 0.71 is (1/sqrt(2)).
-    y += vy * (vx ? sealSpeed : 1);
-    x += vx * (vy ? sealSpeed : 1);
+    y += vy * (vx ? 3: 1);
+    x += vx * (vy ? 3 : 1);
     StartBad();
     UpdateBad();
     CollideBad();
+
+    if (x<-10) status = WIN;
 }
 
 void InitBad(){
@@ -265,12 +306,12 @@ void InitBad(){
 }
 
 void StartBad(){
-    for(int i = 0; i < numberBad; i++){
+    for(int i = numberBad-1; i >= 0; i--){
         if(!bad[i].live){
-            if(rand()%500 == 0){
+            if(rand()%300 == 0){
                 bad[i].live = true;
                 bad[i].y = 30;
-                bad[i].x = 30 + rand() % (SCREEN_W - 60);
+                bad[i].x = 30 + rand() % (SCREEN_W - 20);
                 break;
             }
         }
@@ -299,10 +340,10 @@ void DrawBad()
 void CollideBad(){
     for(unsigned int i=0;i<numberBad;i++){
         if(bad[i].live){
-            if(bad[i].x+bad[i].body_x > x + SEAL_BODY &&
-                bad[i].x-bad[i].body_x< x + SEAL_BODY &&
-                bad[i].y+bad[i].body_y> y - SEAL_BODY &&
-                bad[i].y-bad[i].body_y< y + SEAL_BODY)
+            if(bad[i].x+bad[i].body_x > x  - SEAL_BODY &&
+                bad[i].x-bad[i].body_x< x  + SEAL_BODY &&
+                bad[i].y+bad[i].body_y> y &&
+                bad[i].y-bad[i].body_y< y + 30)
                 {
                     seal_lives--;
                     bad[i].live=false;
@@ -319,9 +360,24 @@ void CollideBad(){
 
 
 void game_draw(void) {
-    al_clear_to_color(al_map_rgb(0, 0, 0));
-    al_draw_filled_rectangle(x, y, x + 25, y + 25, al_map_rgb(255, 255, 255));
+    al_clear_to_color(al_map_rgb(153, 255, 255));
+    if(direction==R)
+        al_draw_bitmap(img, x-100 , y - 71 / 2, ALLEGRO_FLIP_HORIZONTAL);
+    else
+        al_draw_bitmap(img, x-100 , y - 71 / 2, 0);
+    //al_draw_filled_rectangle(x, y, x + 25, y + 25, al_map_rgb(255, 255, 255));
     DrawBad();
+
+    if (status == GG)
+    {
+        al_clear_to_color(al_map_rgb(225, 255, 255));
+        al_draw_text(font, al_map_rgb(35, 35, 35), SCREEN_W / 2, 350,ALLEGRO_ALIGN_CENTER, "Seal Has Died!");
+    }
+    if (status == WIN)
+    {
+        al_clear_to_color(al_map_rgb(183, 255, 255));
+        al_draw_text(font, al_map_rgb(35, 35, 35), SCREEN_W / 2, 350, ALLEGRO_ALIGN_CENTER, "Seal Still Alive !");
+    }
     al_flip_display();
 }
 
