@@ -3,7 +3,7 @@ garbage code now QQ
 
 ## Compile it
 ```
-make akk
+make all
 ```
 
 ## Run it
