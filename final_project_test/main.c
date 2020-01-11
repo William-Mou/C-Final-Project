@@ -3,6 +3,7 @@
 
 #define _CRT_SECURE_NO_DEPRECATE
 #include <stdio.h>
+#include <stdlib.h>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_image.h>
@@ -11,19 +12,22 @@
 #include <allegro5/allegro_audio.h>
 #include <allegro5/allegro_acodec.h>
 #include <math.h>
+#include <string.h>
+
 
 // If defined, logs will be shown on console and written to file.
 // If commented out, logs will not be shown nor be saved.
 #define LOG_ENABLED
-
+#define MAX_TEXT 96
+#define SPEED 2
 /* Constants. */
 
 // Frame rate (frame per second)
 const int FPS = 60;
 // Display (screen) width.
-const int SCREEN_W = 800;
+const int SCREEN_W = 600;
 // Display (screen) height.
-const int SCREEN_H = 600;
+const int SCREEN_H = 400;
 // At most 4 audios can be played at a time.
 const int RESERVE_SAMPLES = 4;
 // Same as:
@@ -50,6 +54,9 @@ bool *mouse_state;
 // Mouse position.
 int mouse_x, mouse_y;
 // TODO: More variables to store input states such as joysticks, ...
+int player_blood = 5;
+
+
 
 /* Variables for allegro basic routines. */
 
@@ -99,6 +106,7 @@ typedef struct {
 	// The pointer to the object’s image.
 	ALLEGRO_BITMAP* img;
 } MovableObject;
+
 void draw_movable_object(MovableObject obj);
 #define MAX_ENEMY 3
 // [HACKATHON 2-2] done
@@ -157,6 +165,8 @@ bool pnt_in_rect(int px, int py, int x, int y, int w, int h);
 /* Event callbacks. */
 void on_key_down(int keycode);
 void on_mouse_down(int btn, int x, int y);
+
+void enemies_fly(void);
 
 /* Declare function prototypes for debugging. */
 
@@ -236,7 +246,7 @@ void allegro5_init(void) {
 	const unsigned m_buttons = al_get_mouse_num_buttons();
 	game_log("There are total %u supported mouse buttons", m_buttons);
 	// mouse_state[0] will not be used.
-	mouse_state = malloc((m_buttons + 1) * sizeof(bool));
+	mouse_state = (bool*)malloc((m_buttons + 1) * sizeof(bool));
 	memset(mouse_state, false, (m_buttons + 1) * sizeof(bool));
 
 	// Register display, timer, keyboard, mouse events to the event queue.
@@ -412,6 +422,7 @@ void game_update(void) {
             if (bullets[i].x < 0 || bullets[i].y<0)
                 bullets[i].hidden = true;
         }
+		enemies_fly();
 
 		// [HACKATHON 2-8]done
 		// TODO: Shoot if key is down and cool-down is over.
@@ -438,8 +449,9 @@ void game_update(void) {
                 bullets[i].x = plane.x;//從那個x射出去
                 bullets[i].y = plane.y-(plane.h)/2;//要從中心點減一半高度
             }
-        }
+        }	
 	}
+	
 }
 
 void game_draw(void) {
@@ -471,6 +483,12 @@ void game_draw(void) {
 		draw_movable_object(plane);
 		for (i = 0; i < MAX_ENEMY; i++)
 			draw_movable_object(enemies[i]);
+		//血條
+		char blood[MAX_TEXT]="BLOOD:";
+		char buff[MAX_TEXT] ;
+		sprintf(buff, "%d", player_blood);
+		strcat(blood,buff);
+		al_draw_text(font_pirulen_24, al_map_rgb(255, 000, 000), 20, SCREEN_H - 50, 0, blood);
 	}
 	// [HACKATHON 3-9]done
 	// TODO: If active_scene is SCENE_SETTINGS.
@@ -590,6 +608,15 @@ void draw_movable_object(MovableObject obj) {
 		return;
 	al_draw_bitmap(obj.img, round(obj.x - obj.w / 2), round(obj.y - obj.h / 2), 0);
 }
+
+void enemies_fly(){
+	for(int i=0; i<MAX_ENEMY; i++)
+	{
+		printf("%d",enemies[i].y );
+		enemies[i].y += SPEED;
+	}
+}
+
 
 ALLEGRO_BITMAP *load_bitmap_resized(const char *filename, int w, int h) {
 	ALLEGRO_BITMAP* loaded_bmp = al_load_bitmap(filename);
