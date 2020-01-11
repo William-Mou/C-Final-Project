@@ -25,9 +25,9 @@
 // Frame rate (frame per second)
 const int FPS = 60;
 // Display (screen) width.
-const int SCREEN_W = 600;
+const int SCREEN_W = 800;
 // Display (screen) height.
-const int SCREEN_H = 400;
+const int SCREEN_H = 600;
 // At most 4 audios can be played at a time.
 const int RESERVE_SAMPLES = 4;
 // Same as:
@@ -35,11 +35,13 @@ const int RESERVE_SAMPLES = 4;
 // const int SCENE_START = 2;
 enum {
 	SCENE_MENU = 1,
-	SCENE_START = 2
+	SCENE_START = 2,
 	// [HACKATHON 3-7] done
 	// TODO: Declare a new scene id.
     //只是uncomment,可能是把第三個叫做settings
-     , SCENE_SETTINGS = 3
+    SCENE_SETTINGS = 3,
+	SCENE_END = 4,
+	SCENE_WIN = 5
 };
 
 /* Input states */
@@ -55,7 +57,7 @@ bool *mouse_state;
 int mouse_x, mouse_y;
 // TODO: More variables to store input states such as joysticks, ...
 int player_blood = 5;
-
+int game_score = 0;
 
 
 /* Variables for allegro basic routines. */
@@ -84,6 +86,7 @@ ALLEGRO_SAMPLE_ID main_bgm_id;
 
 /* Start Scene resources*/
 ALLEGRO_BITMAP* start_img_background;
+ALLEGRO_BITMAP* win_img_background;
 ALLEGRO_BITMAP* start_img_plane;
 ALLEGRO_BITMAP* start_img_enemy;
 ALLEGRO_SAMPLE* start_bgm;
@@ -108,13 +111,13 @@ typedef struct {
 } MovableObject;
 
 void draw_movable_object(MovableObject obj);
-#define MAX_ENEMY 3
+#define MAX_ENEMY 8
 // [HACKATHON 2-2] done
 // TODO: Declare the max bullet count that will show on screen.
 // You can try max 4 bullets here and see if you needed more.
 // Uncomment and fill in the code below.
 //反正就先用4個子彈看看囉
-#define MAX_BULLET 4
+#define MAX_BULLET 8
 MovableObject plane;
 MovableObject enemies[MAX_ENEMY];
 // [HACKATHON 2-3]done
@@ -167,7 +170,7 @@ void on_key_down(int keycode);
 void on_mouse_down(int btn, int x, int y);
 
 void enemies_fly(void);
-
+void bullet_des(void);
 /* Declare function prototypes for debugging. */
 
 // Display error message and exit the program, used like 'printf'.
@@ -291,7 +294,7 @@ void game_init(void) {
 
 	/* Start Scene resources*/
 	start_img_background = load_bitmap_resized("start-bg.jpg", SCREEN_W, SCREEN_H);
-
+	win_img_background = load_bitmap_resized("win-bg.jpg", SCREEN_W, SCREEN_H);
 	start_img_plane = al_load_bitmap("plane.png");
 	if (!start_img_plane)
 		game_abort("failed to load image: plane.png");
@@ -413,7 +416,8 @@ void game_update(void) {
 		// 2) If the bullet is out of the screen, hide it.
 		// Uncomment and fill in the code below.
         //大概有一些keyboard event會輸入到board.vx 跟board.vy，所以用迴圈讀取bullet array，判斷如果子彈現在沒有在螢幕上（被回收了），就跳出迴圈，然後根據那個i(那個子彈)，把他加上他動的距離。
-        int i;
+        // bullet bomb enemies
+		int i;
         for (i=0;i<MAX_BULLET;i++) {
             if (bullets[i].hidden)
                 continue;
@@ -421,9 +425,34 @@ void game_update(void) {
             bullets[i].y += bullets[i].vy;//???
             if (bullets[i].x < 0 || bullets[i].y<0)
                 bullets[i].hidden = true;
-        }
-		enemies_fly();
+			for (int j=0;j<MAX_ENEMY;j++) {
+				//printf("%f  %f\n",abs(bullets[i].y - enemies[j].y), bullets[i].w+ enemies[j].w);
+				if ( abs(bullets[i].y - enemies[j].y) < bullets[i].h/2+ enemies[j].h/2 && (abs(bullets[i].x - enemies[j].x) < bullets[i].w/2+ enemies[j].w/2 ))
+				{
+					if ( bullets[i].hidden || enemies[j].hidden) break;
+					//printf("%f  %f\n",abs(bullets[i].y - enemies[j].y), bullets[i].w+ enemies[j].w);
+					bullets[i].hidden = true;
+					enemies[j].hidden = true;
+					game_score += 1;
+					if(game_score >= 10) active_scene = SCENE_WIN;
 
+				}
+			}
+        }
+
+
+		//enemies bomb plane 
+		for (int j=0;j<MAX_ENEMY;j++) {
+			//printf("%f  %f\n",abs(bullets[i].y - enemies[j].y), bullets[i].w+ enemies[j].w);
+			if ( abs(plane.y - enemies[j].y) < plane.h/2+ enemies[j].h/2 && (abs(plane.x- enemies[j].x) < plane.w/2+ enemies[j].w/2 ))
+			{
+				if (enemies[j].hidden== true) break;
+				enemies[j].hidden = true;
+				player_blood -= 1;
+			}
+		}
+		enemies_fly();
+		
 		// [HACKATHON 2-8]done
 		// TODO: Shoot if key is down and cool-down is over.
 		// 1) Get the time now using 'al_get_time'.
@@ -450,6 +479,19 @@ void game_update(void) {
                 bullets[i].y = plane.y-(plane.h)/2;//要從中心點減一半高度
             }
         }	
+
+		// recreate enemies
+		for (i = 0; i < MAX_ENEMY; i++) {
+			if (enemies[i].hidden){
+				if (rand()&2)
+				{
+					enemies[i].hidden = false;
+					enemies[i].x = enemies[i].w / 2 + (float)rand() / RAND_MAX * (SCREEN_W - enemies[i].w);
+					enemies[i].y = 10;
+				}
+			}
+
+		}
 	}
 	
 }
@@ -489,7 +531,16 @@ void game_draw(void) {
 		sprintf(buff, "%d", player_blood);
 		strcat(blood,buff);
 		al_draw_text(font_pirulen_24, al_map_rgb(255, 000, 000), 20, SCREEN_H - 50, 0, blood);
+
+		char score_text[MAX_TEXT]="SCORE:";
+		//char buff[MAX_TEXT] ;
+		sprintf(buff, "%d", game_score);
+		strcat(score_text,buff);
+		al_draw_text(font_pirulen_24, al_map_rgb(255, 000, 000), 20, SCREEN_H - 100, 0, score_text);
+	} else if (active_scene == SCENE_WIN){
+		al_draw_bitmap(win_img_background, 0, 0, 0);
 	}
+
 	// [HACKATHON 3-9]done
 	// TODO: If active_scene is SCENE_SETTINGS.
 	// Draw anything you want, or simply clear the display.
@@ -561,7 +612,7 @@ void game_change_scene(int next_scene) {
 			enemies[i].w = al_get_bitmap_width(start_img_enemy);
 			enemies[i].h = al_get_bitmap_height(start_img_enemy);
 			enemies[i].x = enemies[i].w / 2 + (float)rand() / RAND_MAX * (SCREEN_W - enemies[i].w);
-			enemies[i].y = 80;
+			enemies[i].y = rand()%10 *8 ;
 		}
 		// [HACKATHON 2-6]done
 		// TODO: Initialize bullets.
@@ -612,11 +663,14 @@ void draw_movable_object(MovableObject obj) {
 void enemies_fly(){
 	for(int i=0; i<MAX_ENEMY; i++)
 	{
-		printf("%d",enemies[i].y );
+		//printf("%d",enemies[i].y );
 		enemies[i].y += SPEED;
+		if(rand()%2) if(rand()%2) continue;
+		if (plane.x - enemies[i].x > rand()%2+20) enemies[i].x += SPEED/2;
+		if (plane.x - enemies[i].x < rand()%2-20) enemies[i].x -= SPEED/2;
+
 	}
 }
-
 
 ALLEGRO_BITMAP *load_bitmap_resized(const char *filename, int w, int h) {
 	ALLEGRO_BITMAP* loaded_bmp = al_load_bitmap(filename);
