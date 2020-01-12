@@ -25,9 +25,9 @@
 // Frame rate (frame per second)
 const int FPS = 60;
 // Display (screen) width.
-const int SCREEN_W = 800;
+const int SCREEN_W = 500;
 // Display (screen) height.
-const int SCREEN_H = 600;
+const int SCREEN_H = 300;
 // At most 4 audios can be played at a time.
 const int RESERVE_SAMPLES = 4;
 // Same as:
