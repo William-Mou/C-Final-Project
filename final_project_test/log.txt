@@ -1,82 +1,103 @@
-There are total 129098752 supported mouse buttons
+There are total 4104410112 supported mouse buttons
 Allegro5 initialized
 Game begin
-resized image: Äû1tU
-resized image: ∞6ltU
-resized image: êÀtU
-Change scene from 6 to 132766128
+resized image: p$ıöU
+resized image: ¿jhıöU
+resized image: †7«ıöU
+Change scene from 6 to -186811664
 Game initialized
 Game start event loop
-Key with keycode 129457128 down
-Change scene from 1 to 132701152
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse button 0 down at (0, 1778990048)
+Change scene from 10 to 38
 stop audio (bgm)
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
-Key with keycode 129457128 down
-Key with keycode 129457128 up
+Mouse button 0 up at (0, 1778990048)
+Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
 Mouse move to (0, 0)
 Mouse move to (0, 0)
 Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
 Mouse move to (0, 0)
 Mouse move to (0, 0)
 Mouse move to (0, 0)
-Mouse move to (0, 0)
-Mouse move to (0, 0)
-Mouse move to (0, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
+Mouse move to (197196682, 0)
 Window close button clicked
 Game end

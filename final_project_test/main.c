@@ -81,6 +81,7 @@ ALLEGRO_BITMAP* main_img_background;
 //只有uncomment, 就像之前的task一樣，建立變數儲存圖片指標
 ALLEGRO_BITMAP* img_settings;
 ALLEGRO_BITMAP* img_settings2;
+ALLEGRO_BITMAP* william;
 ALLEGRO_SAMPLE* main_bgm;
 ALLEGRO_SAMPLE_ID main_bgm_id;
 
@@ -291,6 +292,10 @@ void game_init(void) {
     img_settings2 = al_load_bitmap("settings2.png");
     if (!img_settings2)
         game_abort("failed to load image: settings2.png");
+
+	william = al_load_bitmap("william.png");
+	if (!william)
+        game_abort("failed to load image: william.png");
 
 	/* Start Scene resources*/
 	start_img_background = load_bitmap_resized("start-bg.jpg", SCREEN_W, SCREEN_H);
@@ -513,6 +518,7 @@ void game_draw(void) {
             al_draw_bitmap(img_settings2, SCREEN_W-48, 10, 0);
         else
             al_draw_bitmap(img_settings, SCREEN_W-48, 10, 0);
+			
 	} else if (active_scene == SCENE_START) {
 		int i;
 		al_draw_bitmap(start_img_background, 0, 0, 0);
@@ -547,6 +553,8 @@ void game_draw(void) {
     //佈置切換到settings頁面的樣子，照著打就是變全黑
     else if (active_scene == SCENE_SETTINGS) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
+		al_draw_bitmap(william, 100 , 0, 0);
+		al_draw_text(font_pirulen_24, al_map_rgb(255, 255, 255), 20, SCREEN_H - 100, 0, "Author : William Mou");
     }
 	al_flip_display();
 }
@@ -567,6 +575,7 @@ void game_destroy(void) {
     //如同task,destroy資源
     al_destroy_bitmap(img_settings);
     al_destroy_bitmap(img_settings2);
+
 
 	/* Start Scene resources*/
 	al_destroy_bitmap(start_img_background);
