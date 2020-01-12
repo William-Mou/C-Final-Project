@@ -25,9 +25,9 @@
 // Frame rate (frame per second)
 const int FPS = 60;
 // Display (screen) width.
-const int SCREEN_W = 500;
+const int SCREEN_W = 600;
 // Display (screen) height.
-const int SCREEN_H = 300;
+const int SCREEN_H = 400;
 // At most 4 audios can be played at a time.
 const int RESERVE_SAMPLES = 4;
 // Same as:
@@ -46,6 +46,7 @@ enum {
 
 /* Input states */
 
+int wait_for_gg = 0;
 // The active scene id.
 int active_scene;
 // Keyboard state, whether the key is down or not.
@@ -454,6 +455,7 @@ void game_update(void) {
 				if (enemies[j].hidden== true) break;
 				enemies[j].hidden = true;
 				player_blood -= 1;
+				if (player_blood <= 0)active_scene = SCENE_END;
 			}
 		}
 		enemies_fly();
@@ -545,6 +547,23 @@ void game_draw(void) {
 		al_draw_text(font_pirulen_24, al_map_rgb(255, 000, 000), 20, SCREEN_H - 100, 0, score_text);
 	} else if (active_scene == SCENE_WIN){
 		al_draw_bitmap(win_img_background, 0, 0, 0);
+	} else if(active_scene == SCENE_END)
+	{
+		char blood[MAX_TEXT]="BLOOD:";
+                char buff[MAX_TEXT] ;
+                sprintf(buff, "%d", player_blood);
+                strcat(blood,buff);
+                al_draw_text(font_pirulen_24, al_map_rgb(255, 000, 000), 20, SCREEN_H - 50, 0, blood);
+
+		al_draw_text(font_pirulen_24, al_map_rgb(255,0,0),200,SCREEN_H/2,0, "GAME OVER");
+	wait_for_gg += 1;
+	if (wait_for_gg >= 240) 
+	{
+		game_change_scene(SCENE_MENU);
+		wait_for_gg = 0;
+		game_score = 0;
+		player_blood = 5;
+	}
 	}
 
 	// [HACKATHON 3-9]done
@@ -554,7 +573,7 @@ void game_draw(void) {
     else if (active_scene == SCENE_SETTINGS) {
         al_clear_to_color(al_map_rgb(0, 0, 0));
 		al_draw_bitmap(william, 100 , 0, 0);
-		al_draw_text(font_pirulen_24, al_map_rgb(255, 255, 255), 20, SCREEN_H - 100, 0, "Author : William Mou");
+		al_draw_text(font_pirulen_24, al_map_rgb(100, 100, 255), 20, SCREEN_H - 30, 0, "Author : William Mou");
     }
 	al_flip_display();
 }
@@ -644,7 +663,7 @@ void game_change_scene(int next_scene) {
 }
 
 void on_key_down(int keycode) {
-	if (active_scene == SCENE_MENU) {
+	if (active_scene == SCENE_MENU || active_scene == SCENE_SETTINGS) {
 		if (keycode == ALLEGRO_KEY_ENTER)
 			game_change_scene(SCENE_START);
 	}
